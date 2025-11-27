@@ -100,3 +100,24 @@ VALUES (N'20251126213230_InitialMigration', N'10.0.0');
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+DECLARE @var nvarchar(max);
+SELECT @var = QUOTENAME([d].[name])
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AspNetUsers]') AND [c].[name] = N'Email');
+IF @var IS NOT NULL EXEC(N'ALTER TABLE [AspNetUsers] DROP CONSTRAINT ' + @var + ';');
+UPDATE [AspNetUsers] SET [Email] = N'' WHERE [Email] IS NULL;
+ALTER TABLE [AspNetUsers] ALTER COLUMN [Email] nvarchar(256) NOT NULL;
+ALTER TABLE [AspNetUsers] ADD DEFAULT N'' FOR [Email];
+
+ALTER TABLE [AspNetUsers] ADD [FirstName] nvarchar(256) NOT NULL DEFAULT N'';
+
+ALTER TABLE [AspNetUsers] ADD [LastName] nvarchar(256) NOT NULL DEFAULT N'';
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20251127192637_UpdatedUserTable', N'10.0.0');
+
+COMMIT;
+GO
+

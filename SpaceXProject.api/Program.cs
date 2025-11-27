@@ -6,6 +6,7 @@ using SpaceXProject.api.Data.Models.Authentication;
 using SpaceXProject.api.ExternalApiClient;
 using SpaceXProject.api.ExternalApiClient.Interfaces;
 using System.Text.Json.Serialization;
+using SpaceXProject.api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddApplicationServices();
 
 builder.Services.AddAuthorization();
 
