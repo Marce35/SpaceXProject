@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -6,7 +7,13 @@ using SpaceXProject.api.Data.Models.Authentication;
 using SpaceXProject.api.ExternalApiClient;
 using SpaceXProject.api.ExternalApiClient.Interfaces;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using SpaceXProject.api.Configuration;
+using SpaceXProject.api.Data.Security;
+using SpaceXProject.api.Data.Security.JwtToken;
 using SpaceXProject.api.Extensions;
+using SpaceXProject.api.Shared.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +66,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<IdentityEncryptionKeyConfig>(builder.Configuration.GetSection("IdentityEncryptionKeys"));
+
 builder.Services.AddApplicationServices();
 
 builder.Services.AddAuthorization();
@@ -66,7 +75,7 @@ builder.Services.AddAuthorization();
 builder.Services
     .AddIdentity<User, IdentityRole>(options =>
     {
-        options.Password.RequiredLength = 8;
+        options.Password.RequiredLength = ApplicationConstants.MinPasswordLength;
         options.Password.RequireUppercase = true;
         options.Password.RequireLowercase = true;
 
@@ -83,9 +92,69 @@ builder.Services
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.MaxFailedAccessAttempts = 3;
 
+        options.Stores.ProtectPersonalData = true;
+
     })
     .AddEntityFrameworkStores<ApplicationContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddPersonalDataProtection<IdentityLookupProtector, IdentityLookupProtectorKeyRing>();
+
+
+#region JWT token implementation
+
+var jwtSection = builder.Configuration.GetSection("jwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSection);
+
+var jwtSettings = jwtSection.Get<JwtSettings>();
+
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.Key))
+{
+    throw new InvalidOperationException("JwtSettings are not configured properly. Check User Secrets.");
+}
+
+var key = Encoding.ASCII.GetBytes(jwtSettings.Key);
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+                {
+                    context.Token = context.Request.Cookies["X-Access-Token"];
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+
+#endregion
 
 
 
