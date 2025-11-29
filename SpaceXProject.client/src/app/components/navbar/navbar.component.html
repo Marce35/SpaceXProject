@@ -1,0 +1,46 @@
+<mat-toolbar color="primary" class="main-toolbar">
+  <span class="logo" routerLink="/">SpaceX</span>
+
+  <div class="nav-links">
+    <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Home</a>
+  </div>
+
+  <span class="spacer"></span>
+
+  <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+    <span class="user-name">
+      @if (authService.authState().isAuthenticated) {
+        {{ authService.authState().user?.firstName }} {{ authService.authState().user?.lastName }}
+      } @else {
+        Not Logged In
+      }
+    </span>
+    <mat-icon>account_circle</mat-icon>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item (click)="toggleTheme()" (click)="$event.stopPropagation()">
+      <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      <span>{{ isDarkTheme ? 'Switch to Light' : 'Switch to Dark' }}</span>
+    </button>
+
+    <mat-divider></mat-divider>
+
+    @if (authService.authState().isAuthenticated) {
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    } @else {
+      <button mat-menu-item routerLink="/login">
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </button>
+      <button mat-menu-item routerLink="/register">
+        <mat-icon>person_add</mat-icon>
+        <span>Register</span>
+      </button>
+    }
+  </mat-menu>
+</mat-toolbar>

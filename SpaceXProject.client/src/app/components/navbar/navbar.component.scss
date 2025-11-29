@@ -1,0 +1,54 @@
+.main-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 20px;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+
+  a {
+    color: white;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.active-link {
+      background: rgba(255, 255, 255, 0.15);
+      opacity: 1;
+    }
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+
+  .user-name {
+    margin-right: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+    @media(min-width: 600px) {
+      display: inline;
+    }
+  }
+}

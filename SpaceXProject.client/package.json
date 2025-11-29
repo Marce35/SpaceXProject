@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\" --host=localhost",
+    "prestart": "node dev-certs.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -11,10 +12,12 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.3.14",
+    "@angular/cdk": "^20.2.14",
     "@angular/common": "^20.3.14",
     "@angular/compiler": "^20.3.14",
     "@angular/core": "^20.3.14",
     "@angular/forms": "^20.3.14",
+    "@angular/material": "^20.2.14",
     "@angular/platform-browser": "^20.3.14",
     "@angular/platform-browser-dynamic": "^20.3.14",
     "@angular/router": "^20.3.14",

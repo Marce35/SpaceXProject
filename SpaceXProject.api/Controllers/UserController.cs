@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SpaceXProject.api.Data.DTO.Requests.AuthRequests;
+using SpaceXProject.api.Data.DTO.Responses;
+using SpaceXProject.api.Data.Models.Authentication;
 using SpaceXProject.api.Services;
 using SpaceXProject.api.Shared.Base.ResultPattern;
 using SpaceXProject.api.Shared.Constants;
@@ -15,10 +18,12 @@ namespace SpaceXProject.api.Controllers
     {
 
         private readonly IAuthService _authService;
+        private readonly UserManager<User> _userManager;
 
-        public UserController(IAuthService authService)
+        public UserController(IAuthService authService, UserManager<User> userManager)
         {
             _authService = authService;
+            _userManager = userManager;
         }
 
         [HttpPost("register")]
@@ -69,15 +74,20 @@ namespace SpaceXProject.api.Controllers
         }
 
         [HttpGet("check-session")]
-        public IActionResult CheckSession()
+        public async Task<IActionResult> CheckSession()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return Ok(new
+                var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.Identity.Name;
+
+                if (email is not null)
                 {
-                    User = User.Identity.Name,
-                    IsAuthenticated = true
-                });
+                    var user = await _userManager.FindByEmailAsync(email);
+                    if (user is not null)
+                    {
+                        return Ok(new UserResponse(user.FirstName, user.LastName));
+                    }
+                }
             }
 
             return Unauthorized(new { isAuthenticated = false });

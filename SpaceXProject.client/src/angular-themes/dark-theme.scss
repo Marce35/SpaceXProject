@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+@use './palettes' as p;
+
+$my-primary-dark: mat.m2-define-palette(p.$custom-primary-palette, 200);
+$my-accent-dark: mat.m2-define-palette(p.$custom-accent-palette);
+$my-warn-dark: mat.m2-define-palette(p.$custom-warn-palette);
+
+$theme-dark: mat.m2-define-dark-theme((
+  color: (
+    primary: $my-primary-dark,
+    accent: $my-accent-dark,
+    warn: $my-warn-dark,
+  )
+));
