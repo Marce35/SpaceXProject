@@ -16,6 +16,7 @@ public enum ResultStatusEnum : byte
 
         EmailAlreadyExists,
         Unauthorized,
+        NotAuthenticated,
 
         #endregion
     

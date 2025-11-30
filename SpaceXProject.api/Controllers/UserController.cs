@@ -77,27 +77,9 @@ namespace SpaceXProject.api.Controllers
         [HttpGet("check-session")]
         public async Task<ActionResult<Result<UserResponse>>> CheckSession()
         {
-            var failureResult = new Result<UserResponse>(null, ResultStatusEnum.Unauthorized);
+            var result = await _authService.CheckSessionAsync(User);
 
-            if (User.Identity is { IsAuthenticated: true })
-            {
-                var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.Identity.Name;
-
-                if (email is not null)
-                {
-                    var user = await _userManager.FindByEmailAsync(email);
-                    if (user is not null)
-                    {
-                        var successResult = new Result<UserResponse>(
-                            new UserResponse(user.FirstName, user.LastName),
-                            ResultStatusEnum.Success
-                        );
-                        return Ok(successResult);
-                    }
-                }
-            }
-
-            return Ok(failureResult);
+            return Ok(result);
         }
     }
 }

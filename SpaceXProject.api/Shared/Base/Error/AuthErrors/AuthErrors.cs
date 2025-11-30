@@ -21,4 +21,14 @@ public static class AuthErrors
         code: "Auth_AccountLocked",
         messages: ["The account is locked due to multiple failed login attempts."]
     );
+
+    public static Error UserNotAuthenticated => new(
+        code: "Auth_UserNotAuthenticated",
+        messages: ["User is not authenticated"]
+    );
+
+    public static Error UserNotFound => new(
+        code: "Auth_UserNotFound",
+        messages: ["User is not found"]
+    );
 }

@@ -13,6 +13,7 @@ using SpaceXProject.api.Configuration;
 using SpaceXProject.api.Data.Security;
 using SpaceXProject.api.Data.Security.JwtToken;
 using SpaceXProject.api.Extensions;
+using SpaceXProject.api.Middleware;
 using SpaceXProject.api.Shared.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -187,6 +188,8 @@ app.UseCors("AllowedOrigins");
 
 
 app.UseAuthentication();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

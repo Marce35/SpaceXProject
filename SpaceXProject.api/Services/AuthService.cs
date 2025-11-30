@@ -5,14 +5,17 @@ using SpaceXProject.api.Data.Models.Authentication;
 using SpaceXProject.api.Shared.Base.Error.AuthErrors;
 using SpaceXProject.api.Shared.Base.ResultPattern;
 using SpaceXProject.api.Shared.Base.ResultPattern.ResultFactory.Interface;
+using System.Security.Claims;
 
 namespace SpaceXProject.api.Services;
 
 
 public interface IAuthService
 {
-    Task<Result<string>> RegisterAsync(RegisterRequest request);
+    Task<Result> RegisterAsync(RegisterRequest request);
     Task<Result<LoginResponse>> LoginAsync(LoginRequest request);
+    Task<Result<UserResponse>> CheckSessionAsync(ClaimsPrincipal principal);
+
     Task<Result> LogoutAsync();
 }
 public class AuthService : IAuthService
@@ -38,85 +41,102 @@ public class AuthService : IAuthService
         _resultFactory = resultFactory;
     }
 
-    public async Task<Result<string>> RegisterAsync(RegisterRequest request)
+    public async Task<Result> RegisterAsync(RegisterRequest request)
     {
-        try
+        var user = new User
         {
-            var user = new User
+            UserName = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+
+        if (!result.Succeeded)
+        {
+            if (result.Errors.Any(e => e.Code is "DuplicateUserName" or "DuplicateEmail"))
             {
-                UserName = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-            };
-
-            var result = await _userManager.CreateAsync(user, request.Password);
-
-            if (!result.Succeeded)
-            {
-                if (result.Errors.Any(e => e.Code == "DuplicateUserName" || e.Code == "DuplicateEmail"))
-                {
-                    return _resultFactory.Failure<string>(
-                        AuthErrors.DuplicateEmailError,
-                        ResultStatusEnum.EmailAlreadyExists);
-                }
-
-                var errorMessages = result.Errors.Select(e => e.Description).ToArray();
-                return _resultFactory.Failure<string>(
-                    AuthErrors.RegistrationFailedError(errorMessages),
-                    ResultStatusEnum.ValidationFailed);
+                return _resultFactory.Failure(
+                    AuthErrors.DuplicateEmailError,
+                    ResultStatusEnum.EmailAlreadyExists);
             }
 
-            return _resultFactory.Success("User registered successfully");
+            var errorMessages = result.Errors.Select(e => e.Description).ToArray();
+            return _resultFactory.Failure(
+                AuthErrors.RegistrationFailedError(errorMessages),
+                ResultStatusEnum.ValidationFailed);
         }
-        catch (Exception ex)
-        {
-            return _resultFactory.Exception<string>(ex, "An unexpected error occured during registration");
-        }
+
+        return _resultFactory.Success();
     }
 
     public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
     {
-        try
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user is null)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user is null)
-            {
-                return _resultFactory.Failure<LoginResponse>(
-                    AuthErrors.UnAuthorizedError,
-                    ResultStatusEnum.Unauthorized);
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(user, request.Password, isPersistent: true, lockoutOnFailure: true);
-
-            if (result.Succeeded)
-            {
-                var token = _tokenService.GenerateToken(user);
-                var userResponse = new UserResponse(user.FirstName, user.LastName);
-                return _resultFactory.Success(new LoginResponse(token, userResponse));
-            }
-
-            if (result.IsLockedOut)
-            {
-                return _resultFactory.Failure<LoginResponse>(
-                    AuthErrors.AccountLockedError,
-                    ResultStatusEnum.Unauthorized);
-            }
-
             return _resultFactory.Failure<LoginResponse>(
                 AuthErrors.UnAuthorizedError,
                 ResultStatusEnum.Unauthorized);
         }
-        catch (Exception ex)
+
+        var result = await _signInManager.PasswordSignInAsync(user, request.Password, isPersistent: true, lockoutOnFailure: true);
+
+        if (result.Succeeded)
         {
-            return _resultFactory.Exception<LoginResponse>(ex, "An unexpected error occured during registration");
+            var token = _tokenService.GenerateToken(user);
+            var userResponse = new UserResponse(user.FirstName, user.LastName);
+            return _resultFactory.Success(new LoginResponse(token, userResponse));
         }
+
+        if (result.IsLockedOut)
+        {
+            return _resultFactory.Failure<LoginResponse>(
+                AuthErrors.AccountLockedError,
+                ResultStatusEnum.Failure);
+        }
+
+        return _resultFactory.Failure<LoginResponse>(
+            AuthErrors.UnAuthorizedError,
+            ResultStatusEnum.Unauthorized);
     }
 
     public async Task<Result> LogoutAsync()
     {
         await _signInManager.SignOutAsync();
         return _resultFactory.Success();
+    }
+
+    public async Task<Result<UserResponse>> CheckSessionAsync(ClaimsPrincipal principal)
+    {
+        if (principal?.Identity?.IsAuthenticated != true)
+        {
+            return _resultFactory.Failure<UserResponse>(
+                AuthErrors.UserNotAuthenticated,
+                ResultStatusEnum.NotAuthenticated);
+        }
+
+        var email = principal.FindFirst(ClaimTypes.Name)?.Value
+                    ?? principal.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return _resultFactory.Failure<UserResponse>(
+                AuthErrors.UserNotAuthenticated,
+                ResultStatusEnum.NotAuthenticated);
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null)
+        {
+            return _resultFactory.Failure<UserResponse>(
+                AuthErrors.UserNotFound,
+                ResultStatusEnum.NotFound);
+        }
+
+        return _resultFactory.Success(new UserResponse(user.FirstName, user.LastName));
     }
 }
 

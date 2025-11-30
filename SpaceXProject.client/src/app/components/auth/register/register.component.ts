@@ -82,7 +82,7 @@ export class RegisterComponent {
       this.router.navigate(['/login']);
     } else{
       if(res.status === ResultStatus.EmailAlreadyExists){
-        this.errorMessage = 'Email already is taken';
+        this.errorMessage = 'Email is already  taken';
       }else{
         this.errorMessage = res.error?.messages[0] || 'Register failed.';
       }
