@@ -1,24 +1,158 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .container {
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
   padding: 20px;
+  box-sizing: border-box;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.header {
-  margin-bottom: 24px;
-  h1 { margin-bottom: 4px; color: var(--text-default); }
-  p { color: gray; }
+.header, .filter-card, .loading-shade, mat-paginator {
+  flex: 0 0 auto;
 }
 
-.badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 500;
-  font-size: 0.8rem;
+.header {
+  margin-bottom: 20px;
+  h1 { margin-bottom: 4px; color: var(--text-default); }
+  p { color: gray; margin: 0; }
+}
 
-  &.success { background-color: var(--badge-success-bg); color: var(--badge-success-text); }
-  &.fail { background-color: var(--badge-fail-bg); color: var(--badge-fail-text); }
-  &.upcoming { background-color: var(--badge-upcoming-bg); color: var(--badge-upcoming-text); }
+.filter-card {
+  margin-bottom: 20px;
+}
+
+// ============================================
+// 2. DESKTOP TABLE (Scrollable Area)
+// ============================================
+
+.desktop-table-view {
+  flex: 1 1 auto;
+
+  overflow: auto;
+
+  border: 1px solid var(--table-border-color);
+  border-radius: 8px 8px 0 0; // Rounded top
+  background: var(--mat-table-background-color);
+  position: relative;
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  th.mat-header-cell {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--table-header-bg);
+    color: var(--text-default);
+    border-bottom: 1px solid var(--table-border-color);
+    padding: 16px;
+    font-weight: 600;
+
+    box-shadow: 0 1px 0 0 var(--table-border-color);
+  }
+
+  td.mat-cell {
+    padding: 16px;
+    border-bottom: 1px solid var(--table-border-color);
+    color: var(--text-default);
+  }
+
+  tr.mat-mdc-row:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  // Dark mode hover fix
+  :host-context(.dark-theme) tr.mat-mdc-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+mat-paginator {
+  border: 1px solid var(--table-border-color);
+  border-top: none; // Connect to table
+  border-radius: 0 0 8px 8px; // Rounded bottom
+}
+
+// ============================================
+// 3. MOBILE LAYOUT (Normal Scroll)
+// ============================================
+
+.mobile-card-view {
+  display: none;
+}
+
+// On Mobile, we disable the fixed height logic so the page scrolls naturally
+@media (max-width: 800px) {
+  .container {
+    height: auto;
+    display: block;
+  }
+
+  .desktop-table-view { display: none !important; }
+
+  .mobile-card-view {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+// ============================================
+// 4. SHARED STYLES (Badges, Avatars)
+// ============================================
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.success {
+    background-color: var(--badge-success-bg);
+    color: var(--badge-success-text);
+    border: 1px solid rgba(46, 125, 50, 0.1);
+  }
+
+  &.fail {
+    background-color: var(--badge-fail-bg);
+    color: var(--badge-fail-text);
+    border: 1px solid rgba(198, 40, 40, 0.1);
+  }
+
+  &.upcoming {
+    background-color: var(--badge-upcoming-bg);
+    color: var(--badge-upcoming-text);
+    border: 1px solid rgba(2, 119, 189, 0.1);
+  }
+}
+
+.launch-card {
+  border: 1px solid var(--table-border-color);
+  .rocket-avatar {
+    background-color: var(--rocket-avatar-bg);
+    color: var(--rocket-avatar-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .status-row {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 }
 
 .loading-shade {
@@ -27,42 +161,6 @@
   align-items: center;
   height: 200px;
   background-color: var(--loading-shade-bg);
-}
-
-.desktop-table-view {
-  width: 100%;
-  overflow-x: auto;
-  border-radius: 8px;
-
-  table { width: 100%; }
-}
-
-.mobile-card-view {
-  display: none;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.launch-card {
-  transition: transform 0.2s;
-  .rocket-avatar {
-    background-color: var(--rocket-avatar-bg);
-    color: var(--rocket-avatar-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .card-info { margin-top: 10px; }
-  .status-row { margin-top: 8px; }
-}
-
-@media (max-width: 800px) {
-  .desktop-table-view { display: none !important; }
-  .mobile-card-view { display: flex !important; }
-
-  .filters-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .hidden { display: none !important; }

@@ -21,13 +21,20 @@ export class AuthService {
 
   authState = signal<AuthState>({isAuthenticated: false, user: null});
 
+  public readonly sessionCheckPromise: Promise<void>;
+
   constructor() {
+    this.sessionCheckPromise = this.initSession();
   }
 
   public async initSession() : Promise<void> {
-    const result = await this.checkSession();
-    if(result.isSuccess && result.value){
-      this.authState.set({isAuthenticated: true, user: result.value});
+    try{
+      const result = await this.checkSession();
+      if(result.isSuccess && result.value){
+        this.authState.set({isAuthenticated: true, user: result.value});
+      }
+    } catch (e) {
+      console.error('Session check failed', e);
     }
   }
 

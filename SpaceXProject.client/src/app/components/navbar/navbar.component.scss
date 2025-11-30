@@ -2,6 +2,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: var(--navbar-text);
+
+  .mat-icon {
+    color: var(--navbar-text);
+  }
 }
 
 .logo {
@@ -14,10 +19,17 @@
 .nav-links {
   display: flex;
   gap: 10px;
+
   a {
-    color: white;
-    opacity: 0.9;
-    &.active-link { background: rgba(255, 255, 255, 0.2); }
+    color: var(--navbar-text) !important;
+    opacity: 0.85;
+    text-decoration: none;
+
+    &:hover { opacity: 1; }
+    &.active-link {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
   }
 }
 
@@ -26,6 +38,7 @@
 .user-menu-btn {
   display: flex;
   align-items: center;
+  color: var(--navbar-text) !important;
 
   .user-name-trigger {
     margin-right: 8px;

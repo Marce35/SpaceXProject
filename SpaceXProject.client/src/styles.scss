@@ -1,9 +1,7 @@
 @use '@angular/material' as mat;
-// Import the separate theme files
 @use './angular-themes/light-theme' as light;
 @use './angular-themes/dark-theme' as dark;
 
-// Include Core Material Styles
 @include mat.core();
 
 // ============================================
@@ -12,52 +10,56 @@
 
 // --- Apply Light Theme (Default) ---
 :root {
-  // Apply the actual Material Theme Components
   @include mat.all-component-themes(light.$theme-light);
 
-  // -- Custom Colors (Light Variables) --
-  --background-default: #f5f5f5;
+  --background-default: #f8f9fa;
   --text-default: rgba(0, 0, 0, 0.87);
+  --navbar-text: #ffffff;
 
-  // Loading Overlay
-  --loading-shade-bg: rgba(255, 255, 255, 0.6);
+  // Table Borders & Headers
+  --table-border-color: rgba(0,0,0,0.12);
+  --table-header-bg: #f8f9fa; // Background for sticky header
 
-  // Status Badges
+  // --- BADGE COLORS (Light) ---
   --badge-success-bg: #e8f5e9;
   --badge-success-text: #2e7d32;
+
   --badge-fail-bg: #ffebee;
   --badge-fail-text: #c62828;
+
   --badge-upcoming-bg: #e3f2fd;
   --badge-upcoming-text: #0277bd;
 
-  // Launch Items (Rocket Avatar)
-  --rocket-avatar-bg: #f3e5f5;
-  --rocket-avatar-text: #7b1fa2;
+  // Rocket Avatar
+  --rocket-avatar-bg: #f2e7ff;
+  --rocket-avatar-text: #6d00ff;
 }
 
 // --- Apply Dark Theme ---
 body.dark-theme {
-  // Apply Material Dark Theme Components
   @include mat.all-component-colors(dark.$theme-dark);
 
-  // -- Custom Colors (Dark Variables) --
-  --background-default: #303030;
-  --text-default: #ffffff;
+  --background-default: #121212;
+  --text-default: #e0e0e0;
+  --navbar-text: #ffffff;
 
-  // Loading Overlay
-  --loading-shade-bg: rgba(0, 0, 0, 0.6);
+  // Table Borders & Headers
+  --table-border-color: rgba(255,255,255,0.12);
+  --table-header-bg: #1e1e1e; // Darker background for sticky header
 
-  // Status Badges (Desaturated for dark mode)
+  // --- BADGE COLORS (Dark - Desaturated) ---
   --badge-success-bg: rgba(46, 125, 50, 0.2);
   --badge-success-text: #a5d6a7;
+
   --badge-fail-bg: rgba(198, 40, 40, 0.2);
   --badge-fail-text: #ef9a9a;
+
   --badge-upcoming-bg: rgba(2, 119, 189, 0.2);
   --badge-upcoming-text: #81d4fa;
 
-  // Launch Items
-  --rocket-avatar-bg: #4a148c;
-  --rocket-avatar-text: #e1bee7;
+  // Rocket Avatar
+  --rocket-avatar-bg: #36009f;
+  --rocket-avatar-text: #d0adff;
 }
 
 // ============================================
@@ -83,6 +85,6 @@ body {
 }
 
 @media (max-width: 800px) {
-  .desktop-table-view { display: none; }
-  .mobile-card-view { display: flex; flex-direction: column; gap: 16px; }
+  .desktop-table-view { display: none !important; }
+  .mobile-card-view { display: flex !important; }
 }
