@@ -1,0 +1,57 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.hero {
+  margin-bottom: 60px;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    font-weight: 300;
+    color: var(--text-default);
+  }
+
+  p {
+    font-size: 1.25rem;
+    color: gray;
+    margin-bottom: 32px;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+
+    button {
+      padding: 0 24px;
+      height: 48px;
+    }
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  text-align: left;
+}
+
+.feature-card {
+  // Makes cards slightly pop off the gray background
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  mat-icon {
+    transform: scale(1.5);
+    margin-right: 10px;
+  }
+}

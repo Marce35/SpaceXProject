@@ -1,0 +1,55 @@
+<div class="home-container">
+  <div class="hero">
+    <h1>Welcome to SpaceX</h1>
+    <p>Explore the latest mission data, rocket specifications, and launch history.</p>
+
+    <div class="cta-actions">
+      @if (authService.authState().isAuthenticated) {
+        <button mat-raised-button color="primary" routerLink="/launches">
+          <mat-icon>rocket_launch</mat-icon>
+          VIEW LAUNCHES
+        </button>
+      } @else {
+        <button mat-raised-button color="primary" routerLink="/login">
+          <mat-icon>login</mat-icon>
+          GET STARTED
+        </button>
+        <button mat-stroked-button color="primary" routerLink="/register">
+          CREATE ACCOUNT
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <mat-card class="feature-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="primary">history</mat-icon>
+        <mat-card-title>Mission History</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Access a comprehensive archive of all past SpaceX missions, including success rates and landing details.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="feature-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="accent">public</mat-icon>
+        <mat-card-title>Rocket Tech</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Deep dive into the technical specifications of the Falcon 9, Falcon Heavy, and Starship vehicles.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="feature-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="warn">schedule</mat-icon>
+        <mat-card-title>Upcoming Launches</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Stay updated with real-time schedules for the next generation of space exploration.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -17,7 +17,7 @@ export class DbService {
     });
   }
 
-  async setSetting(key: string, value: any): Promise<void> {
+  async setSetting<T>(key: string, value: T): Promise<void> {
     const db = await this.dbPromise;
     return new Promise((resolve, reject) => {
       const tx = db.transaction(this.storeName, 'readwrite');
@@ -33,6 +33,16 @@ export class DbService {
       const tx = db.transaction(this.storeName, 'readonly');
       const request = tx.objectStore(this.storeName).get(key);
       request.onsuccess = () => resolve(request.result || null);
+    });
+  }
+
+  async clearAllSettings(): Promise<void> {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      tx.objectStore(this.storeName).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject("Error clearing DB");
     });
   }
 }

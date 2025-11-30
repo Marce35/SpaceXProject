@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SpaceXProject.api.Data.DTO.Requests.AuthRequests;
+using SpaceXProject.api.Data.DTO.Responses;
 using SpaceXProject.api.Data.Models.Authentication;
 using SpaceXProject.api.Shared.Base.Error.AuthErrors;
 using SpaceXProject.api.Shared.Base.ResultPattern;
@@ -11,7 +12,7 @@ namespace SpaceXProject.api.Services;
 public interface IAuthService
 {
     Task<Result<string>> RegisterAsync(RegisterRequest request);
-    Task<Result<string>> LoginAsync(LoginRequest request);
+    Task<Result<LoginResponse>> LoginAsync(LoginRequest request);
     Task<Result> LogoutAsync();
 }
 public class AuthService : IAuthService
@@ -74,14 +75,14 @@ public class AuthService : IAuthService
         }
     }
 
-    public async Task<Result<string>> LoginAsync(LoginRequest request)
+    public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
     {
         try
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user is null)
             {
-                return _resultFactory.Failure<string>(
+                return _resultFactory.Failure<LoginResponse>(
                     AuthErrors.UnAuthorizedError,
                     ResultStatusEnum.Unauthorized);
             }
@@ -91,23 +92,24 @@ public class AuthService : IAuthService
             if (result.Succeeded)
             {
                 var token = _tokenService.GenerateToken(user);
-                return _resultFactory.Success(token);
+                var userResponse = new UserResponse(user.FirstName, user.LastName);
+                return _resultFactory.Success(new LoginResponse(token, userResponse));
             }
 
             if (result.IsLockedOut)
             {
-                return _resultFactory.Failure<string>(
+                return _resultFactory.Failure<LoginResponse>(
                     AuthErrors.AccountLockedError,
                     ResultStatusEnum.Unauthorized);
             }
 
-            return _resultFactory.Failure<string>(
+            return _resultFactory.Failure<LoginResponse>(
                 AuthErrors.UnAuthorizedError,
                 ResultStatusEnum.Unauthorized);
         }
         catch (Exception ex)
         {
-            return _resultFactory.Exception<string>(ex, "An unexpected error occured during registration");
+            return _resultFactory.Exception<LoginResponse>(ex, "An unexpected error occured during registration");
         }
     }
 

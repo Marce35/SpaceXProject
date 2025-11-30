@@ -50,7 +50,7 @@ export class NavBarComponent implements OnInit {
     }
   }
 
-  logout() {
-    this.authService.logout().subscribe();
+  async logout() {
+    await this.authService.logout();
   }
 }

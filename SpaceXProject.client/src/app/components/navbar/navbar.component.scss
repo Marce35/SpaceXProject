@@ -9,46 +9,54 @@
   font-size: 1.2rem;
   cursor: pointer;
   margin-right: 20px;
-
-  &:hover {
-    opacity: 0.9;
-  }
 }
 
 .nav-links {
   display: flex;
   gap: 10px;
-
   a {
     color: white;
-    opacity: 0.8;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &.active-link {
-      background: rgba(255, 255, 255, 0.15);
-      opacity: 1;
-    }
+    opacity: 0.9;
+    &.active-link { background: rgba(255, 255, 255, 0.2); }
   }
 }
 
-.spacer {
-  flex: 1 1 auto;
-}
+.spacer { flex: 1 1 auto; }
 
 .user-menu-btn {
   display: flex;
   align-items: center;
 
-  .user-name {
+  .user-name-trigger {
     margin-right: 8px;
     font-size: 0.9rem;
     font-weight: 500;
+
+    // Hide name on very small screens to save space
     display: none;
     @media(min-width: 600px) {
       display: inline;
     }
+  }
+}
+
+// Styling for the User Info inside the opened menu
+.menu-user-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  cursor: default;
+
+  .info-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--mat-menu-item-text-color);
+  }
+
+  .info-role {
+    font-size: 0.8rem;
+    color: gray;
+    margin-top: 4px;
   }
 }

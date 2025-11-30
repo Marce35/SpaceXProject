@@ -39,7 +39,6 @@
           <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
-          <mat-hint>8+ chars, 1 number, 1 special char</mat-hint>
           @if(registerForm.get('password')?.hasError('required')){
             <mat-error>Required</mat-error>
           }

@@ -16,6 +16,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from '@angular/material/icon';
 import {RegisterRequest} from "../../../data/requests/register-request";
+import {ResultStatus} from "../../../data/models/result-pattern/result";
 
 
 // Custom Validator for Password Match
@@ -65,7 +66,7 @@ export class RegisterComponent {
     }, { validators: passwordMatchValidator });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.registerForm.invalid) return;
 
     this.isLoading = true;
@@ -73,19 +74,18 @@ export class RegisterComponent {
 
     const request: RegisterRequest = this.registerForm.value as RegisterRequest;
 
-    this.authService.register(request).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        if (err.error?.messages && Array.isArray(err.error.messages)) {
-          this.errorMessage = err.error.messages.join(', ');
-        } else {
-          this.errorMessage = err.error?.message || 'Registration failed.';
-        }
+    const res = await this.authService.register(request);
+
+    this.isLoading = false;
+
+    if(res.isSuccess){
+      this.router.navigate(['/login']);
+    } else{
+      if(res.status === ResultStatus.EmailAlreadyExists){
+        this.errorMessage = 'Email already is taken';
+      }else{
+        this.errorMessage = res.error?.messages[0] || 'Register failed.';
       }
-    });
+    }
   }
 }

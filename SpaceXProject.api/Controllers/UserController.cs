@@ -31,15 +31,15 @@ namespace SpaceXProject.api.Controllers
         {
             var result = await _authService.RegisterAsync(request);
 
-            return MapResultToActionResult(result);
+            return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<Result<UserResponse>>> Login([FromBody] LoginRequest request)
         {
             var result = await _authService.LoginAsync(request);
 
-            if (result.IsSuccess)
+            if (result is { IsSuccess: true, Value: not null })
             {
                 var cookieOptions = new CookieOptions
                 {
@@ -49,12 +49,13 @@ namespace SpaceXProject.api.Controllers
                     Expires = DateTime.UtcNow.AddMinutes(ApplicationConstants.HttpCookieExpirationInMinutes)
                 };
 
-                Response.Cookies.Append("X-Access-Token", result.Value!, cookieOptions);
+                Response.Cookies.Append("X-Access-Token", result.Value.Token, cookieOptions);
+                var frontendResult = new Result<UserResponse>(result.Value.User, ResultStatusEnum.Success);
 
-                return Ok(new { Message = "Login Successful" });
-
+                return Ok(frontendResult);
             }
-            return MapResultToActionResult(result);
+
+            return Ok(new Result<UserResponse>(null, result.Status, result.Error));
         }
 
         [HttpPost("logout")]
@@ -70,13 +71,15 @@ namespace SpaceXProject.api.Controllers
                 SameSite = SameSiteMode.Strict
             });
 
-            return MapResultToActionResult(result);
+            return Ok(result);
         }
 
         [HttpGet("check-session")]
-        public async Task<IActionResult> CheckSession()
+        public async Task<ActionResult<Result<UserResponse>>> CheckSession()
         {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
+            var failureResult = new Result<UserResponse>(null, ResultStatusEnum.Unauthorized);
+
+            if (User.Identity is { IsAuthenticated: true })
             {
                 var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.Identity.Name;
 
@@ -85,44 +88,16 @@ namespace SpaceXProject.api.Controllers
                     var user = await _userManager.FindByEmailAsync(email);
                     if (user is not null)
                     {
-                        return Ok(new UserResponse(user.FirstName, user.LastName));
+                        var successResult = new Result<UserResponse>(
+                            new UserResponse(user.FirstName, user.LastName),
+                            ResultStatusEnum.Success
+                        );
+                        return Ok(successResult);
                     }
                 }
             }
 
-            return Unauthorized(new { isAuthenticated = false });
+            return Ok(failureResult);
         }
-
-
-        #region ResultMapper
-
-        private IActionResult MapResultToActionResult<T>(Result<T> result)
-        {
-            return result.Status switch
-            {
-                ResultStatusEnum.Success => Ok(result.Value),
-                ResultStatusEnum.EmailAlreadyExists => Conflict(result.Error),
-                ResultStatusEnum.Unauthorized => Unauthorized(result.Error),
-                ResultStatusEnum.ValidationFailed => BadRequest(result.Error),
-                ResultStatusEnum.NotFound => NotFound(result.Error),
-                ResultStatusEnum.Exception => StatusCode(500, result.Error),
-                _ => BadRequest(result.Error != null ? result.Error : new { Message = "An unspecified error occured." })
-            };
-        }
-
-        private IActionResult MapResultToActionResult(Result result)
-        {
-            return result.Status switch
-            {
-                ResultStatusEnum.Success => Ok(new { Message = "Operation successful" }),
-                ResultStatusEnum.Unauthorized => Unauthorized(result.Error),
-                ResultStatusEnum.ValidationFailed => BadRequest(result.Error),
-                ResultStatusEnum.NotFound => NotFound(result.Error),
-                ResultStatusEnum.Exception => StatusCode(500, result.Error),
-                _ => BadRequest(result.Error)
-            };
-        }
-
-        #endregion
     }
 }

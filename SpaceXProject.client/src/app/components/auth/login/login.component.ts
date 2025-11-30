@@ -1,13 +1,14 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import {Component, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {MatCardModule} from '@angular/material/card';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 import {AuthService} from "../../../services/auth.service";
 import {LoginRequest} from "../../../data/requests/login-request";
+import {ResultStatus} from "../../../data/models/result-pattern/result";
 
 @Component({
   selector: 'app-login',
@@ -36,7 +37,7 @@ export class LoginComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.loginForm.invalid) return;
 
     this.isLoading = true;
@@ -44,15 +45,18 @@ export class LoginComponent {
 
     const request: LoginRequest = this.loginForm.value as LoginRequest;
 
-    this.authService.login(request).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/launches']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Login failed. Please check credentials.';
+    const res = await this.authService.login(request);
+
+    this.isLoading = false;
+
+    if(res.isSuccess){
+      this.router.navigate(['/launches']);
+    } else{
+      if(res.status === ResultStatus.UnAuthorized){
+        this.errorMessage = 'Invalid credentials.';
+      }else{
+        this.errorMessage = res.error?.messages[0] || 'Login failed.';
       }
-    });
+    }
   }
 }
