@@ -23,7 +23,6 @@ namespace SpaceXProject.api.Controllers
         }
 
         [HttpGet]
-        // [FromQuery] maps the URL params (?page=1&limit=10) to the C# Object
         public async Task<ActionResult<Result<SpaceXPagedResponse<SpaceXLaunch>>>> GetLaunches([FromQuery] GetLaunchesRequest request)
         {
             var result = await _externalApiClient.GetLaunchesAsync(request);

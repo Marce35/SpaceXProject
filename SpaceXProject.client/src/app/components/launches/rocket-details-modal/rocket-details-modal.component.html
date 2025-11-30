@@ -1,0 +1,66 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>{{ data.name }}</h2>
+  <div class="active-badge" [class.inactive]="!data.active">
+    {{ data.active ? 'ACTIVE' : 'INACTIVE' }}
+  </div>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  @if (data.flickr_images.length) {
+    <div class="image-container">
+      <img [src]="data.flickr_images[0]" alt="{{data.name}}" loading="lazy">
+    </div>
+  } @else {
+    <div class="image-placeholder">
+      <mat-icon>rocket_launch</mat-icon>
+      <span>No Image Available</span>
+    </div>
+  }
+
+  <div class="section">
+    <h3>Overview</h3>
+    <p class="description">{{ data.description }}</p>
+  </div>
+
+  <div class="section">
+    <h3>Technical Specifications</h3>
+    <div class="specs-grid">
+
+      <div class="spec-card">
+        <span class="label">Height</span>
+        <div class="value-group">
+          <span class="primary-val">{{ data.height.meters }} m</span>
+          <span class="secondary-val">{{ data.height.feet }} ft</span>
+        </div>
+      </div>
+
+      <div class="spec-card">
+        <span class="label">Diameter</span>
+        <div class="value-group">
+          <span class="primary-val">{{ data.diameter.meters }} m</span>
+          <span class="secondary-val">{{ data.diameter.feet }} ft</span>
+        </div>
+      </div>
+
+      <div class="spec-card">
+        <span class="label">Mass</span>
+        <div class="value-group">
+          <span class="primary-val">{{ data.mass.kg | number }} kg</span>
+          <span class="secondary-val">{{ data.mass.lb | number }} lb</span>
+        </div>
+      </div>
+
+      <div class="spec-card">
+        <span class="label">Type</span>
+        <div class="value-group">
+          <span class="primary-val" style="text-transform: capitalize;">{{ data.type }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close color="warn">Close</button>
+</mat-dialog-actions>

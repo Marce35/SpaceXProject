@@ -2,6 +2,7 @@ export interface SpaceXRocket {
   id: string;
   name: string;
   type: string;
+  active: boolean;
   description: string;
   height: { meters: number; feet: number };
   diameter: { meters: number; feet: number };

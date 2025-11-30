@@ -20,6 +20,7 @@ import {LaunchService} from "../../../services/launch.service";
 import {SpaceXLaunchRow} from "../../../data/models/launch-row";
 import {LaunchQueryRequest} from "../../../data/requests/launch-query";
 import {SpaceXLaunch} from "../../../data/models/spacex-launch";
+import {RocketDetailsModal} from "../rocket-details-modal/rocket-details-modal.component";
 
 // Custom
 
@@ -144,11 +145,11 @@ export class LaunchesComponent implements OnInit {
   }
 
   openRocketDetails(row: SpaceXLaunchRow) {
-    // if(!row.rocketDetails) return;
-    //
-    // this.dialog.open(RocketDetailsDialogComponent, {
-    //   width: '500px',
-    //   data: row.rocketDetails
-    // });
+    if(!row.rocketDetails) return;
+
+    this.dialog.open(RocketDetailsModal, {
+      width: '500px',
+      data: row.rocketDetails
+    });
   }
 }

@@ -34,7 +34,6 @@
   --rocket-avatar-bg: #f2e7ff;
   --rocket-avatar-text: #6d00ff;
 }
-
 // --- Apply Dark Theme ---
 body.dark-theme {
   @include mat.all-component-colors(dark.$theme-dark);
@@ -42,6 +41,9 @@ body.dark-theme {
   --background-default: #121212;
   --text-default: #e0e0e0;
   --navbar-text: #ffffff;
+
+  --mat-app-background-color: #121212;
+  --mat-background-card-color: #1e1e1e;
 
   // Table Borders & Headers
   --table-border-color: rgba(255,255,255,0.12);

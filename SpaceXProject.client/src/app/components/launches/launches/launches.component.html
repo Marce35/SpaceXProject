@@ -7,13 +7,13 @@
   <mat-card class="filter-card">
     <mat-card-content [formGroup]="filterForm">
       <div class="filters-grid">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Search Mission</mat-label>
           <input matInput formControlName="search" placeholder="Ex. Starlink">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Launch Status</mat-label>
           <mat-select formControlName="type">
             <mat-option value="all">All Launches</mat-option>
@@ -22,7 +22,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Sort Order</mat-label>
           <mat-select formControlName="sort">
             <mat-option value="desc">Newest First</mat-option>
@@ -103,7 +103,7 @@
 
         <mat-card-content>
           <div class="card-info">
-            <p><strong>Rocket:</strong> {{launch.rocketName}}</p>
+            <p>Rocket: {{launch.rocketName}}</p>
             <div class="status-row">
               @if(launch.upcoming) {
                 <span class="badge upcoming">Upcoming</span>
@@ -117,8 +117,8 @@
         </mat-card-content>
 
         <mat-card-actions align="end">
-          <button mat-stroked-button color="primary" (click)="openRocketDetails(launch)">
-            VIEW DETAILS
+          <button mat-flat-button color="primary" class="mobile-details-btn" (click)="openRocketDetails(launch)">
+            View Details
           </button>
         </mat-card-actions>
       </mat-card>

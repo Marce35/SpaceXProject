@@ -1,0 +1,142 @@
+// Layout Constraints
+.dialog-content {
+  min-width: 320px;
+  max-width: 550px;
+  padding-bottom: 20px;
+}
+
+// Header Area
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-default);
+    font-weight: 300;
+  }
+}
+
+// Active/Inactive Badge
+.active-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background-color: var(--badge-success-bg);
+  color: var(--badge-success-text);
+  border: 1px solid rgba(46, 125, 50, 0.2);
+
+  &.inactive {
+    background-color: var(--badge-fail-bg);
+    color: var(--badge-fail-text);
+    border: 1px solid rgba(198, 40, 40, 0.2);
+  }
+}
+
+// Image Handling
+.image-container {
+  margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.image-placeholder {
+  margin-top: 16px;
+  height: 200px;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: gray;
+
+  mat-icon {
+    transform: scale(2);
+    margin-bottom: 10px;
+  }
+}
+
+// Text Sections
+.section {
+  margin-top: 24px;
+
+  h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--rocket-avatar-text); // Use primary theme color
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--rocket-avatar-bg);
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+
+  .description {
+    line-height: 1.6;
+    color: var(--text-default);
+    opacity: 0.9;
+    font-size: 0.95rem;
+  }
+}
+
+// Specs Grid
+.specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.spec-card {
+  background-color: rgba(0,0,0,0.03);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--table-border-color);
+
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: gray;
+    margin-bottom: 4px;
+  }
+
+  .value-group {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+
+    .primary-val {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-default);
+    }
+
+    .secondary-val {
+      font-size: 0.8rem;
+      color: gray;
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  .spec-card {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .image-placeholder {
+    background-color: rgba(255,255,255,0.05);
+  }
+}
