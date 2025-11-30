@@ -22,7 +22,6 @@ export class AuthService {
   authState = signal<AuthState>({isAuthenticated: false, user: null});
 
   constructor() {
-    this.initSession()
   }
 
   public async initSession() : Promise<void> {

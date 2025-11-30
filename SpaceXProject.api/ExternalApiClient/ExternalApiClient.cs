@@ -1,4 +1,5 @@
-﻿using SpaceXProject.api.Data.DTO.Responses;
+﻿using SpaceXProject.api.Data.DTO.Requests;
+using SpaceXProject.api.Data.DTO.Responses;
 using SpaceXProject.api.Data.Models.SpaceXApi;
 using SpaceXProject.api.Data.Models.SpaceXApi.Core;
 using SpaceXProject.api.Data.Models.SpaceXApi.Requests;
@@ -19,45 +20,57 @@ public class ExternalApiClient : IExternalApiClient
         _resultFactory = resultFactory;
     }
 
-    public async Task<Result<SpaceXPagedResponse<SpaceXLaunch>>> GetLaunchesAsync(int page, int limit)
+    public async Task<Result<SpaceXPagedResponse<SpaceXLaunch>>> GetLaunchesAsync(GetLaunchesRequest request)
     {
-        try
+
+        var query = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            var requestBody = new SpaceXQueryRequest
+            query["name"] = new Dictionary<string, object>
             {
-                Query = new { }, 
-                Options = new SpaceXQueryOptions
-                {
-                    Page = page,
-                    Limit = limit,
-                    Sort = new { date_utc = "desc" },
-                    Populate = ["rocket"]
-                }
+                { "$regex", request.Search },
+                { "$options", "i" }
             };
-
-            var response = await _httpClient.PostAsJsonAsync("launches/query", requestBody);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return _resultFactory.Failure<SpaceXPagedResponse<SpaceXLaunch>>(
-                    new Error("SpaceX_ApiError", [$"Failed to fetch launches. Status: {response.StatusCode}"]),
-                    ResultStatusEnum.Failure);
-            }
-
-            var pagedResult = await response.Content.ReadFromJsonAsync<SpaceXPagedResponse<SpaceXLaunch>>();
-
-            if (pagedResult == null)
-            {
-                return _resultFactory.Failure<SpaceXPagedResponse<SpaceXLaunch>>(
-                    new Error("SpaceX_SerializationError", ["Received empty response from SpaceX"]),
-                    ResultStatusEnum.Failure);
-            }
-
-            return _resultFactory.Success(pagedResult);
         }
-        catch (Exception ex)
+
+        if (request.Type == "upcoming") query["upcoming"] = true;
+        else if (request.Type == "past") query["upcoming"] = false;
+
+
+        var sort = new { flight_number = request.Sort == "asc" ? "asc" : "desc" };
+
+        var requestBody = new SpaceXQueryRequest
         {
-            return _resultFactory.Exception<SpaceXPagedResponse<SpaceXLaunch>>(ex, "Error communicating with SpaceX API");
+            Query = query,
+            Options = new SpaceXQueryOptions
+            {
+                Page = request.Page,
+                Limit = request.Limit,
+                Sort = sort,
+                Populate = ["rocket"]
+            }
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("launches/query", requestBody);
+
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return _resultFactory.Failure<SpaceXPagedResponse<SpaceXLaunch>>(
+                new Error("SpaceX_ApiError", [$"Failed to fetch launches. Status: {response.StatusCode}"]),
+                ResultStatusEnum.Failure);
         }
+
+        var pagedResult = await response.Content.ReadFromJsonAsync<SpaceXPagedResponse<SpaceXLaunch>>();
+
+        if (pagedResult == null)
+        {
+            return _resultFactory.Failure<SpaceXPagedResponse<SpaceXLaunch>>(
+                new Error("SpaceX_SerializationError", ["Received empty response from SpaceX"]),
+                ResultStatusEnum.Failure);
+        }
+
+        return _resultFactory.Success(pagedResult);
     }
 }
