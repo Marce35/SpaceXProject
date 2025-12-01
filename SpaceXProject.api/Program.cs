@@ -159,6 +159,13 @@ builder.Services.AddAuthentication(options =>
 
 #endregion
 
+#region API HealthCheck
+
+
+builder.Services.AddHealthChecks();
+
+#endregion
+
 
 
 var app = builder.Build();
@@ -192,6 +199,8 @@ app.UseCors("AllowedOrigins");
 app.UseAuthentication();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 

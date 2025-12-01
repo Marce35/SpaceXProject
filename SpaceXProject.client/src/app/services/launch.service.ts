@@ -5,12 +5,13 @@ import {toPromise} from "../core/api-helper";
 import {LaunchQueryRequest} from "../data/requests/launch-query";
 import {PagedResponse} from "../data/responses/core/paged-response";
 import {SpaceXLaunch} from "../data/models/spacex-launch";
+import {environment} from "../../environments/environment.development";
 
 @Injectable({
   providedIn: 'root',
 })
 export class LaunchService {
-  private apiUrl = 'https://localhost:7200/api/launches/';
+  private apiUrl = `${environment.apiUrl}/launches/`;
 
   private http = inject(HttpClient);
 

@@ -15,6 +15,11 @@
   --background-default: #f8f9fa;
   --text-default: rgba(0, 0, 0, 0.87);
   --navbar-text: #ffffff;
+  --warn-bg: #bf3030;
+
+  --scroll_bg: #f5f5f5;
+  --scroll_thumb: linear-gradient(278deg, #cccccc -10.44%, #aaaaaa 100%);
+  --scroll_thumb_highlighted: linear-gradient(278deg, #aaaaaa -10.44%, #888888 100%);
 
   // Table Borders & Headers
   --table-border-color: rgba(0,0,0,0.12);
@@ -41,9 +46,17 @@ body.dark-theme {
   --background-default: #121212;
   --text-default: #e0e0e0;
   --navbar-text: #ffffff;
+  --warn-bg: #df2020;
 
-  --mat-app-background-color: #121212;
+  --scroll_bg: #1a1a1d;
+  --scroll_thumb: linear-gradient(278deg, #2a2a2d -10.44%, #3b3b3e 100%);
+  --scroll_thumb_highlighted: linear-gradient(278deg, #3b3b3e -10.44%, #555555 100%);
+
+  --mat-app-background-color: #0f0f0f;
   --mat-background-card-color: #1e1e1e;
+  --mat-card-elevated-container-color: #0f0f0f;
+
+  --mat-dialog-background: #1d1d1d;
 
   // Table Borders & Headers
   --table-border-color: rgba(255,255,255,0.12);
@@ -90,3 +103,67 @@ body {
   .desktop-table-view { display: none !important; }
   .mobile-card-view { display: flex !important; }
 }
+
+// ================================
+// SNACKBAR CUSTOMIZATION
+// ================================
+
+.mat-mdc-snackbar-surface {
+  background-color: var(--warn-bg) !important;
+  color: var(--navbar-text) !important;
+}
+
+.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled).mat-unthemed {
+  color: var(--navbar-text) !important;
+}
+
+
+//#region custom scrollbar
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll_bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll_thumb);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll_thumb_highlighted);
+}
+
+.mat-mdc-table {
+  background-color: var(--mat-card-elevated-container-color) !important;
+}
+
+.mat-mdc-paginator {
+  background-color: var(--mat-card-elevated-container-color) !important;
+}
+
+.mat-mdc-card {
+  background: var(--mat-card-elevated-container-color) !important;
+  backdrop-filter: blur(35px);
+}
+
+mat-dialog-container {
+  background-color: var(--mat-card-elevated-container-color) !important;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 1rem !important;
+  background-color: var(--mat-dialog-background) !important;
+}
+
+.mat-mdc-dialog-container {
+  border-radius: 1rem !important;
+}
+
+.mdc-dialog__surface {
+  border-radius: 1rem !important;
+}
+//#endregion
+

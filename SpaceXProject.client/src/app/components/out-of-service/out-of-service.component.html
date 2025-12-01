@@ -1,0 +1,18 @@
+<div class="oos-container">
+  <div class="content">
+    <mat-icon class="icon" color="warn">cloud_off</mat-icon>
+    <h1>System Unavailable</h1>
+    <p>We are currently unable to connect to the SpaceX servers.</p>
+    <p class="sub-text">The system is automatically retrying connection...</p>
+
+    <div class="spinner-wrapper">
+      @if(isRetrying) {
+        <mat-spinner diameter="30" color="accent"></mat-spinner>
+      } @else {
+        <div class="pulse-dot"></div>
+      }
+    </div>
+
+    <button mat-stroked-button (click)="manualRetry()">Try Now</button>
+  </div>
+</div>

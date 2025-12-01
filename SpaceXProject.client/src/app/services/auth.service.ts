@@ -8,12 +8,13 @@ import {UserResponse} from "../data/responses/user-response";
 import {DbService} from "./db.service";
 import {Result} from "../data/models/result-pattern/result";
 import {toPromise} from "../core/api-helper";
+import {environment} from "../../environments/environment.development";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7200/api/user';
+  private apiUrl = `${environment.apiUrl}/user`;
 
   private http = inject(HttpClient);
   private router = inject(Router);

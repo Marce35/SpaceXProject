@@ -1,0 +1,1 @@
+export const SNACK_BAR_ERROR_MESSAGE_DURATION = 10000; //ms

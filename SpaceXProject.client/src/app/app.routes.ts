@@ -5,6 +5,7 @@ import {HomeComponent} from "./components/home/home.component";
 import {LaunchesComponent} from "./components/launches/launches/launches.component";
 import {AuthGuard} from "./guards/auth-guard";
 import {GuestGuard} from "./guards/guest-guard";
+import {OutOfServiceComponent} from "./components/out-of-service/out-of-service.component";
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,5 +24,6 @@ export const routes: Routes = [
     component: LaunchesComponent,
     canActivate: [AuthGuard] // Only for users
   },
+  { path: 'out-of-service', component: OutOfServiceComponent},
   { path: '**', redirectTo: '' }
 ];
