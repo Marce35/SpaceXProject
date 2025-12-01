@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-
-// Material Imports
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -21,8 +19,8 @@ import {SpaceXLaunchRow} from "../../../data/models/launch-row";
 import {LaunchQueryRequest} from "../../../data/requests/launch-query";
 import {SpaceXLaunch} from "../../../data/models/spacex-launch";
 import {RocketDetailsModal} from "../rocket-details-modal/rocket-details-modal.component";
-
-// Custom
+import {SortDirection} from "../../../data/enums/sort-direction.enum";
+import {LaunchStatusFilter} from "../../../data/enums/launch-status-filter.enum";
 
 @Component({
   selector: 'app-launches',
@@ -42,41 +40,38 @@ export class LaunchesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private dialog = inject(MatDialog);
 
-  // Use the Row Model for the DataSource
   displayedColumns: string[] = ['name', 'date', 'rocket', 'success', 'actions'];
   dataSource = new MatTableDataSource<SpaceXLaunchRow>([]);
   totalDocs = 0;
   isLoading = false;
   filterForm: FormGroup;
 
+  public SortDirection = SortDirection;
+  public LaunchStatusFilter = LaunchStatusFilter;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor() {
     this.filterForm = this.fb.group({
       search: [''],
-      type: ['all'],
-      sort: ['desc']
+      type: [LaunchStatusFilter.All],
+      sort: [SortDirection.Descending]
     });
   }
 
   async ngOnInit() {
-    // 1. Restore filters from IndexDB BEFORE loading data
     const savedFilters = await this.dbService.getSetting<any>('launch_filters');
 
     if (savedFilters) {
-      // emitEvent: false prevents triggering the valueChanges subscription immediately
       this.filterForm.patchValue(savedFilters, { emitEvent: false });
     }
 
-    // 2. Load Data (uses the restored filters)
     this.loadLaunches();
 
-    // 3. Setup persistence listener
     this.filterForm.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
     ).subscribe(async (vals) => {
-      // Save to DB whenever filters change
       await this.dbService.setSetting('launch_filters', vals);
 
       if (this.paginator) this.paginator.pageIndex = 0;
@@ -87,13 +82,12 @@ export class LaunchesComponent implements OnInit {
   async loadLaunches() {
     this.isLoading = true;
 
-    debugger;
     const request: LaunchQueryRequest = {
       page: this.paginator ? this.paginator.pageIndex + 1 : 1,
       limit: this.paginator ? this.paginator.pageSize : 10,
       search: this.filterForm.value.search || '',
-      type: this.filterForm.value.type,
-      sort: this.filterForm.value.sort
+      type: this.filterForm.value.type as LaunchStatusFilter,
+      sort: this.filterForm.value.sort as SortDirection,
     };
 
     const res = await this.launchService.getLaunches(request);
@@ -103,7 +97,6 @@ export class LaunchesComponent implements OnInit {
     if (res.isSuccess && res.value) {
       this.totalDocs = res.value.totalDocs;
 
-      // MAP RESPONSE TO ROWS
       const rows = res.value.docs.map(item => this.mapToRow(item));
       this.dataSource.data = rows;
 
@@ -127,16 +120,15 @@ export class LaunchesComponent implements OnInit {
       });
     }
 
-    // 2. Return UI Model
     return {
       id: item.id,
       name: item.name,
       rawDate: item.date_utc,
-      formattedDate: formattedDateString, // <--- Used in HTML
+      formattedDate: formattedDateString,
       success: item.success,
       upcoming: item.upcoming,
       rocketName: item.rocket?.name || 'Unknown',
-      rocketDetails: item.rocket // Store full object for dialog
+      rocketDetails: item.rocket
     };
   }
 

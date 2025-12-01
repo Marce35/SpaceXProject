@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SpaceXProject.api.Data.DTO.Requests;
 using SpaceXProject.api.Data.DTO.Responses;
 using SpaceXProject.api.Data.Models.SpaceXApi;
-using SpaceXProject.api.ExternalApiClient.Interfaces;
+using SpaceXProject.api.Services;
 using SpaceXProject.api.Shared.Base.ResultPattern;
 
 namespace SpaceXProject.api.Controllers
@@ -15,17 +15,17 @@ namespace SpaceXProject.api.Controllers
     public class LaunchesController : ControllerBase
     {
 
-        private readonly IExternalApiClient _externalApiClient;
+        private readonly ILaunchesService _launchesService;
 
-        public LaunchesController(IExternalApiClient externalApiClient)
+        public LaunchesController(ILaunchesService launchesService)
         {
-            _externalApiClient = externalApiClient;
+            _launchesService = launchesService;
         }
 
         [HttpGet]
         public async Task<ActionResult<Result<SpaceXPagedResponse<SpaceXLaunch>>>> GetLaunches([FromQuery] GetLaunchesRequest request)
         {
-            var result = await _externalApiClient.GetLaunchesAsync(request);
+            var result = await _launchesService.GetLaunchesAsync(request);
             return Ok(result);
         }
 

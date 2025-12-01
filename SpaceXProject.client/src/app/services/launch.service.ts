@@ -16,8 +16,6 @@ export class LaunchService {
 
 
   async getLaunches(req: LaunchQueryRequest): Promise<Result<PagedResponse<SpaceXLaunch>>> {
-    debugger;
-
     const queryParams: any = {
       page: req.page,
       limit: req.limit,

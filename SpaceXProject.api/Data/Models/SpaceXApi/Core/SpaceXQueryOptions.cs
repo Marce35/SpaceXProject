@@ -10,8 +10,8 @@ namespace SpaceXProject.api.Data.Models.SpaceXApi.Core;
         public int Limit { get; set; }
 
         [JsonPropertyName("sort")]
-        public object Sort { get; set; } = new { flight_number = "desc" };
+        public object Sort { get; set; } = new { };
 
         [JsonPropertyName("populate")]
-        public string[] Populate { get; set; } = [];
+        public object[] Populate { get; set; } = [];
     }

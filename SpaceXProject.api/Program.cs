@@ -33,6 +33,8 @@ builder.Services.AddOpenApi();
 
 builder.Configuration.AddUserSecrets<Program>();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddHttpClient<IExternalApiClient, ExternalApiClient>((sp, client) =>
 {
     client.BaseAddress = new Uri("https://api.spacexdata.com/v5/");
