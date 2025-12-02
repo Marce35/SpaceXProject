@@ -87,4 +87,4 @@ Follow these steps to set up the project locally.
     ng serve
     ```
 
-4.  Open your browser at `http://localhost:4200`.
+4.  Open your browser at `https://localhost:4200`.
